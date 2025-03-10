@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="id">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Alarm Audio</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+    </head>
+    <body
+        class="bg-gradient-to-br from-indigo-100 to-purple-100 min-h-screen flex items-center justify-center p-4"
+    >
+        <div
+            class="bg-white rounded-2xl shadow-2xl p-6 md:p-8 max-w-md w-full transition-all duration-300 hover:shadow-xl"
+        >
+
+            <h1
+                class="text-3xl font-bold text-center mb-6 text-indigo-600 transition-colors duration-300"
+            >
+                Alarm
+            </h1>
+
+            <!-- Jam Digital -->
+            <div class="mb-8 text-center">
+                <div
+                    id="digitalClock"
+                    class="text-4xl md:text-5xl font-bold text-gray-800 bg-gray-100 p-4 rounded-xl shadow-inner transition-all duration-300"
+                ></div>
+            </div>
+
+            <div class="mb-6">
+                <label
+                    for="alarmTime"
+                    class="block text-gray-700 font-medium mb-2"
+                    >Set Waktu Alarm:</label
+                >
+                <input
+                    type="time"
+                    id="alarmTime"
+                    class="w-full p-4 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 text-lg transition-all duration-300"
+                />
+            </div>
+
+            <!-- Panel Kontrol -->
+            <div class="grid grid-cols-2 gap-4 mb-6">
+                <button
+                    id="setAlarm"
+                    class="bg-indigo-600 text-white py-3 px-4 rounded-lg hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 transform hover:scale-105 transition-all duration-300 flex items-center justify-center font-medium"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 mr-2"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                        />
+                    </svg>
+                    Set Alarm
+                </button>
+                <button
+                    id="stopAlarm"
+                    class="bg-red-500 text-white py-3 px-4 rounded-lg hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transform hover:scale-105 transition-all duration-300 flex items-center justify-center font-medium opacity-50"
+                    disabled
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        class="h-5 w-5 mr-2"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke="currentColor"
+                    >
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12"
+                        />
+                    </svg>
+                    Stop Alarm
+                </button>
+            </div>
+
+            <!-- Preset Quick Alarms -->
+            <div class="mb-6">
+                <p class="text-sm text-gray-500 mb-2">Preset Cepat:</p>
+                <div class="grid grid-cols-4 gap-2">
+                    <button
+                        class="quick-alarm bg-gray-100 hover:bg-indigo-100 rounded py-2 text-sm transition-colors duration-300"
+                        data-time="5"
+                    >
+                        +5m
+                    </button>
+                    <button
+                        class="quick-alarm bg-gray-100 hover:bg-indigo-100 rounded py-2 text-sm transition-colors duration-300"
+                        data-time="10"
+                    >
+                        +10m
+                    </button>
+                    <button
+                        class="quick-alarm bg-gray-100 hover:bg-indigo-100 rounded py-2 text-sm transition-colors duration-300"
+                        data-time="15"
+                    >
+                        +15m
+                    </button>
+                    <button
+                        class="quick-alarm bg-gray-100 hover:bg-indigo-100 rounded py-2 text-sm transition-colors duration-300"
+                        data-time="30"
+                    >
+                        +30m
+                    </button>
+                </div>
+            </div>
+
+            <!-- Volume Control -->
+            <div class="mb-6">
+                <label
+                    for="volumeControl"
+                    class="block text-gray-700 font-medium mb-2"
+                    >Volume:</label
+                >
+                <input
+                    type="range"
+                    id="volumeControl"
+                    min="0"
+                    max="1"
+                    step="0.1"
+                    value="0.7"
+                    class="w-full accent-indigo-600"
+                />
+            </div>
+
+            <!-- Status Alarm -->
+            <div
+                id="alarmStatus"
+                class="text-center p-4 rounded-lg hidden transition-all duration-500 mb-6"
+            >
+                <div class="flex items-center justify-center">
+                    <span id="statusIcon" class="mr-2"></span>
+                    <p id="statusText" class="font-medium"></p>
+                </div>
+            </div>
+
+            <!-- Countdown Timer -->
+            <div id="countdownContainer" class="hidden">
+                <p class="text-center text-gray-600 mb-1">
+                    Alarm berdering dalam:
+                </p>
+                <p
+                    id="countdownTimer"
+                    class="text-center font-bold text-indigo-600 text-xl"
+                ></p>
+            </div>
+
+            <!-- Audio Element -->
+            <audio id="alarmSound">
+                <source src="sound.mp3" type="audio/mpeg" />
+                Maaf, browser Anda tidak mendukung elemen audio.
+            </audio>
+        </div>
+
+        <script>
+            // Elements
+            const alarmTimeInput = document.getElementById("alarmTime")
+            const setAlarmButton = document.getElementById("setAlarm")
+            const stopAlarmButton = document.getElementById("stopAlarm")
+            const digitalClock = document.getElementById("digitalClock")
+            const alarmStatus = document.getElementById("alarmStatus")
+            const statusText = document.getElementById("statusText")
+            const statusIcon = document.getElementById("statusIcon")
+            const alarmSound = document.getElementById("alarmSound")
+            const volumeControl = document.getElementById("volumeControl")
+            const countdownContainer =
+                document.getElementById("countdownContainer")
+            const countdownTimer = document.getElementById("countdownTimer")
+            const quickAlarmButtons = document.querySelectorAll(".quick-alarm")
+
+            let alarmTime = null
+            let alarmTimeout
+            let countdownInterval
+
+            // Set volume from slider
+            volumeControl.addEventListener("input", () => {
+                alarmSound.volume = volumeControl.value
+            })
+
+            // Initialize volume
+            alarmSound.volume = volumeControl.value
+
+            // Format time function (HH:MM:SS)
+            function formatTime(date) {
+                const hours = String(date.getHours()).padStart(2, "0")
+                const minutes = String(date.getMinutes()).padStart(2, "0")
+                const seconds = String(date.getSeconds()).padStart(2, "0")
+                return `${hours}:${minutes}:${seconds}`
+            }
+
+            // Format time without seconds (HH:MM)
+            function formatTimeNoSeconds(date) {
+                const hours = String(date.getHours()).padStart(2, "0")
+                const minutes = String(date.getMinutes()).padStart(2, "0")
+                return `${hours}:${minutes}`
+            }
+
+            // Update digital clock
+            function updateDigitalClock() {
+                const now = new Date()
+                digitalClock.textContent = formatTime(now)
+
+                // Pulse effect on seconds change
+                digitalClock.classList.add("scale-105")
+                setTimeout(() => {
+                    digitalClock.classList.remove("scale-105")
+                }, 500)
+            }
+
+            // Update clock every second
+            setInterval(updateDigitalClock, 1000)
+            updateDigitalClock()
+
+            // Quick alarm preset buttons
+            quickAlarmButtons.forEach((button) => {
+                button.addEventListener("click", () => {
+                    const minutesToAdd = parseInt(button.dataset.time)
+                    const now = new Date()
+                    now.setMinutes(now.getMinutes() + minutesToAdd)
+
+                    // Update time input with the quick alarm time
+                    alarmTimeInput.value = formatTimeNoSeconds(now)
+
+                    // Add pulse animation
+                    button.classList.add("bg-indigo-200")
+                    setTimeout(() => {
+                        button.classList.remove("bg-indigo-200")
+                    }, 300)
+                })
+            })
+
+            // Set Alarm function
+            function setAlarm() {
+                const timeString = alarmTimeInput.value
+
+                if (!timeString) {
+                    showStatus(
+                        "⚠️",
+                        "Mohon masukkan waktu alarm",
+                        "bg-yellow-100 text-yellow-800"
+                    )
+                    shakeElement(alarmTimeInput)
+                    return
+                }
+
+                // Get hours and minutes from input
+                const [hoursStr, minutesStr] = timeString.split(":")
+                const hours = parseInt(hoursStr)
+                const minutes = parseInt(minutesStr)
+
+                // Set alarm time
+                const now = new Date()
+                alarmTime = new Date()
+                alarmTime.setHours(hours)
+                alarmTime.setMinutes(minutes)
+                alarmTime.setSeconds(0)
+
+                // If alarm time is in the past, set for tomorrow
+                if (alarmTime < now) {
+                    alarmTime.setDate(alarmTime.getDate() + 1)
+                }
+
+                // Calculate time until alarm in milliseconds
+                const timeUntilAlarm = alarmTime - now
+
+                // Display status
+                const alarmTimeFormatted = formatTimeNoSeconds(alarmTime)
+                showStatus(
+                    "⏰",
+                    `Alarm disetel untuk ${alarmTimeFormatted}`,
+                    "bg-green-100 text-green-800"
+                )
+
+                // Start countdown timer
+                startCountdown(timeUntilAlarm)
+
+                // Set timeout for alarm
+                alarmTimeout = setTimeout(() => {
+                    triggerAlarm()
+                }, timeUntilAlarm)
+
+                // Update UI
+                setAlarmButton.disabled = true
+                setAlarmButton.classList.add("opacity-50")
+                alarmTimeInput.disabled = true
+
+                // Animate setting alarm
+                setAlarmButton.classList.add("scale-95")
+                setTimeout(() => {
+                    setAlarmButton.classList.remove("scale-95")
+                }, 200)
+            }
+
+            // Start countdown timer
+            function startCountdown(milliseconds) {
+                countdownContainer.classList.remove("hidden")
+
+                function updateCountdown() {
+                    const now = new Date()
+                    const timeLeft = alarmTime - now
+
+                    if (timeLeft <= 0) {
+                        clearInterval(countdownInterval)
+                        countdownContainer.classList.add("hidden")
+                        return
+                    }
+
+                    // Calculate hours, minutes, seconds
+                    const hours = Math.floor(timeLeft / (1000 * 60 * 60))
+                    const minutes = Math.floor(
+                        (timeLeft % (1000 * 60 * 60)) / (1000 * 60)
+                    )
+                    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000)
+
+                    // Format countdown text
+                    let countdownText = ""
+                    if (hours > 0) {
+                        countdownText += `${hours} jam `
+                    }
+                    if (minutes > 0 || hours > 0) {
+                        countdownText += `${minutes} menit `
+                    }
+                    countdownText += `${seconds} detik`
+
+                    countdownTimer.textContent = countdownText
+                }
+
+                updateCountdown()
+                countdownInterval = setInterval(updateCountdown, 1000)
+            }
+
+            // Trigger alarm function
+            function triggerAlarm() {
+                alarmSound.loop = true
+                alarmSound.play().catch((error) => {
+                    // Handle any playback errors
+                    console.error("Error playing sound:", error)
+                    showStatus(
+                        "❌",
+                        "Gagal memainkan audio. Cek izin browser.",
+                        "bg-red-100 text-red-800"
+                    )
+                })
+
+                showStatus("🔔", "Alarm berbunyi!", "bg-red-100 text-red-800")
+                stopAlarmButton.disabled = false
+                stopAlarmButton.classList.remove("opacity-50")
+
+                // Clear countdown
+                clearInterval(countdownInterval)
+                countdownContainer.classList.add("hidden")
+
+                // Vibrate if supported
+                if (navigator.vibrate) {
+                    navigator.vibrate([400, 200, 400])
+                }
+
+                // Visual feedback - flash background
+                document.body.classList.add("bg-red-50")
+                setTimeout(() => {
+                    document.body.classList.remove("bg-red-50")
+                }, 300)
+
+                // Pulse effect on alarm
+                pulseElement(stopAlarmButton)
+            }
+
+            // Stop alarm function
+            function stopAlarm() {
+                alarmSound.pause()
+                alarmSound.currentTime = 0
+                clearTimeout(alarmTimeout)
+                clearInterval(countdownInterval)
+                countdownContainer.classList.add("hidden")
+
+                showStatus(
+                    "✅",
+                    "Alarm dihentikan",
+                    "bg-blue-100 text-blue-800"
+                )
+
+                // Reset UI
+                setAlarmButton.disabled = false
+                setAlarmButton.classList.remove("opacity-50")
+                stopAlarmButton.disabled = true
+                stopAlarmButton.classList.add("opacity-50")
+                alarmTimeInput.disabled = false
+                alarmTime = null
+
+                // Stop button animation
+                stopAlarmButton.classList.add("scale-95")
+                setTimeout(() => {
+                    stopAlarmButton.classList.remove("scale-95")
+                }, 200)
+            }
+
+            // Show status function
+            function showStatus(icon, message, colorClass) {
+                statusIcon.textContent = icon
+                statusText.textContent = message
+                alarmStatus.className = `text-center p-4 rounded-lg ${colorClass} flex items-center justify-center transition-all duration-300`
+                alarmStatus.classList.remove("hidden")
+
+                // Animate status appearance
+                alarmStatus.classList.add("scale-105")
+                setTimeout(() => {
+                    alarmStatus.classList.remove("scale-105")
+                }, 300)
+            }
+
+            // Shake element animation
+            function shakeElement(element) {
+                element.classList.add("border-red-500")
+                element.animate(
+                    [
+                        { transform: "translateX(0)" },
+                        { transform: "translateX(-5px)" },
+                        { transform: "translateX(5px)" },
+                        { transform: "translateX(-5px)" },
+                        { transform: "translateX(5px)" },
+                        { transform: "translateX(0)" },
+                    ],
+                    {
+                        duration: 400,
+                        easing: "ease-in-out",
+                    }
+                )
+
+                setTimeout(() => {
+                    element.classList.remove("border-red-500")
+                }, 400)
+            }
+
+            // Pulse element animation
+            function pulseElement(element) {
+                const pulseInterval = setInterval(() => {
+                    element.classList.add("scale-105")
+                    setTimeout(() => {
+                        element.classList.remove("scale-105")
+                    }, 500)
+                }, 1000)
+
+                // Stop pulse after 10 seconds if alarm not manually stopped
+                setTimeout(() => {
+                    clearInterval(pulseInterval)
+                }, 10000)
+            }
+
+            // Event listeners
+            setAlarmButton.addEventListener("click", setAlarm)
+            stopAlarmButton.addEventListener("click", stopAlarm)
+
+            // Add keyboard shortcut - press Enter to set alarm
+            alarmTimeInput.addEventListener("keyup", (event) => {
+                if (event.key === "Enter" && !setAlarmButton.disabled) {
+                    setAlarm()
+                }
+            })
+
+            // Enable service worker if supported (for future offline capability)
+            if ("serviceWorker" in navigator) {
+                window.addEventListener("load", () => {
+                    navigator.serviceWorker
+                        .register("/sw.js")
+                        .then((registration) => {
+                            console.log("ServiceWorker registered")
+                        })
+                        .catch((error) => {
+                            console.log(
+                                "ServiceWorker registration failed: ",
+                                error
+                            )
+                        })
+                })
+            }
+        </script>
+    </body>
+</html>
